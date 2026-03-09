@@ -6,7 +6,12 @@ import com.famousbookshelf.common.Result;
 import com.famousbookshelf.entity.Author;
 import com.famousbookshelf.service.AuthorService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.beans.BeanUtils;
+import com.famousbookshelf.dto.AuthorCreateDTO;
+import com.famousbookshelf.dto.AuthorUpdateDTO;
 
 /**
  * 管理端 — 作者 CRUD
@@ -20,6 +25,7 @@ public class AdminAuthorController {
 
     /** 分页列表（带关键字搜索，按更新时间倒序） */
     @GetMapping
+    @PreAuthorize("hasAuthority('content:author:list')")
     public Result<Page<Author>> list(
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer size,
@@ -39,14 +45,20 @@ public class AdminAuthorController {
 
     /** 新增 */
     @PostMapping
-    public Result<Author> create(@RequestBody Author author) {
+    @PreAuthorize("hasAuthority('content:author:add')")
+    public Result<Author> create(@Validated @RequestBody AuthorCreateDTO dto) {
+        Author author = new Author();
+        BeanUtils.copyProperties(dto, author);
         authorService.save(author);
         return Result.success(author);
     }
 
     /** 编辑 */
     @PutMapping("/{id}")
-    public Result<Author> update(@PathVariable("id") Long id, @RequestBody Author author) {
+    @PreAuthorize("hasAuthority('content:author:update')")
+    public Result<Author> update(@PathVariable("id") Long id, @Validated @RequestBody AuthorUpdateDTO dto) {
+        Author author = new Author();
+        BeanUtils.copyProperties(dto, author);
         author.setAuthorId(id);
         authorService.updateById(author);
         return Result.success(author);
@@ -54,6 +66,7 @@ public class AdminAuthorController {
 
     /** 逻辑删除 */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('content:author:delete')")
     public Result<Void> delete(@PathVariable("id") Long id) {
         authorService.removeById(id);
         return Result.success();

@@ -1,0 +1,29 @@
+# ============================================================
+# 名人书架 (Famous Bookshelf) — 生产环境配置
+# ============================================================
+
+spring:
+  # -------------------- 数据源 (Prod) --------------------
+  # 生产环境通常会使用环境变量来注入这些敏感属性，例如 ${DB_URL}
+  datasource:
+    url: jdbc:postgresql://aws-1-ap-northeast-2.pooler.supabase.com:5432/postgres_prod
+    username: ${DB_USERNAME:prod_user}
+    password: ${DB_PASSWORD:prod_password}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 10
+      connection-timeout: 30000
+
+# -------------------- MyBatis-Plus (Prod) --------------------
+mybatis-plus:
+  configuration:
+    # 生产环境关闭控制台 SQL 输出以提升性能及安全性
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
+
+# -------------------- 日志级别 (Prod) --------------------
+logging:
+  level:
+    root: INFO
+    com.famousbookshelf: INFO
+    com.baomidou.mybatisplus: WARN

@@ -6,7 +6,12 @@ import com.famousbookshelf.common.Result;
 import com.famousbookshelf.entity.Celebrity;
 import com.famousbookshelf.service.CelebrityService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.beans.BeanUtils;
+import com.famousbookshelf.dto.CelebrityCreateDTO;
+import com.famousbookshelf.dto.CelebrityUpdateDTO;
 
 /**
  * 管理端 — 名人 CRUD
@@ -20,6 +25,7 @@ public class AdminCelebrityController {
 
     /** 分页列表（带关键字搜索，按更新时间倒序） */
     @GetMapping
+    @PreAuthorize("hasAuthority('content:celebrity:list')")
     public Result<Page<Celebrity>> list(
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer size,
@@ -41,14 +47,20 @@ public class AdminCelebrityController {
 
     /** 新增 */
     @PostMapping
-    public Result<Celebrity> create(@RequestBody Celebrity celebrity) {
+    @PreAuthorize("hasAuthority('content:celebrity:add')")
+    public Result<Celebrity> create(@Validated @RequestBody CelebrityCreateDTO dto) {
+        Celebrity celebrity = new Celebrity();
+        BeanUtils.copyProperties(dto, celebrity);
         celebrityService.save(celebrity);
         return Result.success(celebrity);
     }
 
     /** 编辑 */
     @PutMapping("/{id}")
-    public Result<Celebrity> update(@PathVariable("id") Long id, @RequestBody Celebrity celebrity) {
+    @PreAuthorize("hasAuthority('content:celebrity:update')")
+    public Result<Celebrity> update(@PathVariable("id") Long id, @Validated @RequestBody CelebrityUpdateDTO dto) {
+        Celebrity celebrity = new Celebrity();
+        BeanUtils.copyProperties(dto, celebrity);
         celebrity.setCelebrityId(id);
         celebrityService.updateById(celebrity);
         return Result.success(celebrity);
@@ -56,6 +68,7 @@ public class AdminCelebrityController {
 
     /** 逻辑删除 */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('content:celebrity:delete')")
     public Result<Void> delete(@PathVariable("id") Long id) {
         celebrityService.removeById(id);
         return Result.success();
