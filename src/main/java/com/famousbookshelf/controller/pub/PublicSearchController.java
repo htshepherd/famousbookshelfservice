@@ -39,6 +39,11 @@ public class PublicSearchController {
                         return Result.success(result);
                 }
 
+                if (keyword.length() > 100) {
+                        return Result.error(400, "搜索关键词过长");
+                }
+
+
                 // 搜索图书（中文名或英文名 ILIKE）
                 result.setBooks(bookService.searchBooksEnriched(keyword));
                 // 搜索名人

@@ -21,11 +21,18 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
+    private final com.famousbookshelf.security.LoginRateLimiter rateLimiter;
+
 
     @PostMapping("/login")
     public Result<LoginResponseDTO> login(@Validated @RequestBody LoginRequestDTO request) {
+        if (!rateLimiter.tryConsume(request.getUsername())) {
+            return Result.error(429, "登录尝试次数过多，请稍后再试");
+        }
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+
 
         if (authentication.isAuthenticated()) {
             String token = jwtUtils.generateToken(request.getUsername());

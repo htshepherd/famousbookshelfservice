@@ -25,6 +25,10 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthFilter;
 
     private final CustomUserDetailsService customUserDetailsService;
+    
+    @org.springframework.beans.factory.annotation.Value("${swagger.enabled:true}")
+    private boolean swaggerEnabled;
+
 
     public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter, CustomUserDetailsService customUserDetailsService) {
         this.jwtAuthFilter = jwtAuthFilter;
@@ -37,13 +41,18 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> {
                 })
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/public/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
-                        .permitAll()
-                        .requestMatchers("/api/admin/**").authenticated()
-                        .anyRequest().authenticated())
+                .authorizeHttpRequests(auth -> {
+                        auth.requestMatchers("/api/auth/**").permitAll()
+                            .requestMatchers("/api/public/**").permitAll();
+
+                        if (swaggerEnabled) {
+                            auth.requestMatchers(HttpMethod.GET, "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll();
+                        }
+
+                        auth.requestMatchers("/api/admin/**").authenticated()
+                            .anyRequest().authenticated();
+                })
+
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

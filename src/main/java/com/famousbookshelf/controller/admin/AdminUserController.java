@@ -9,7 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.util.List;
 
@@ -30,16 +32,21 @@ public class AdminUserController {
 
     @PostMapping("/add")
     @PreAuthorize("hasAuthority('system:user:add')")
-    public Result<Boolean> add(@RequestBody User user) {
+    public Result<Boolean> add(@Validated @RequestBody com.famousbookshelf.dto.UserDTO userDTO) {
+        User user = new User();
+        org.springframework.beans.BeanUtils.copyProperties(userDTO, user);
         if (StringUtils.hasText(user.getPassword())) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
         return Result.success(userService.save(user));
     }
 
+
     @PutMapping("/update")
     @PreAuthorize("hasAuthority('system:user:update')")
-    public Result<Boolean> update(@RequestBody User user) {
+    public Result<Boolean> update(@Validated @RequestBody com.famousbookshelf.dto.UserDTO userDTO) {
+        User user = new User();
+        org.springframework.beans.BeanUtils.copyProperties(userDTO, user);
         // Clear password if not update
         if (!StringUtils.hasText(user.getPassword())) {
             user.setPassword(null);
@@ -48,6 +55,7 @@ public class AdminUserController {
         }
         return Result.success(userService.updateById(user));
     }
+
 
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasAuthority('system:user:delete')")

@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 
 /**
  * C 端公开接口 — 图书详情
@@ -82,6 +85,16 @@ public class PublicBookController {
                 new LambdaQueryWrapper<Recommendation>()
                         .eq(Recommendation::getBookId, bookId));
 
+        if (recs.isEmpty()) {
+            return Result.success(new ArrayList<>());
+        }
+
+        // 批量查询名人信息，避免 N+1
+        List<Long> celebrityIds = recs.stream().map(Recommendation::getCelebrityId).distinct().toList();
+        Map<Long, Celebrity> celebrityMap = celebrityService.listByIds(celebrityIds).stream()
+                .collect(Collectors.toMap(Celebrity::getCelebrityId, c -> c));
+
+
         List<RecommendationVO> voList = new ArrayList<>();
         for (Recommendation rec : recs) {
             RecommendationVO vo = new RecommendationVO();
@@ -101,7 +114,7 @@ public class PublicBookController {
             vo.setAuthorChineseName(authorName);
 
             // 填充名人信息
-            Celebrity celebrity = celebrityService.getById(rec.getCelebrityId());
+            Celebrity celebrity = celebrityMap.get(rec.getCelebrityId());
             if (celebrity != null) {
                 vo.setCelebrityId(celebrity.getCelebrityId());
                 vo.setCelebrityChineseName(celebrity.getChineseName());
@@ -112,6 +125,7 @@ public class PublicBookController {
 
             voList.add(vo);
         }
+
 
         return Result.success(voList);
     }
