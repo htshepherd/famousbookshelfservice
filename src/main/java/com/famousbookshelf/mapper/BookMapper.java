@@ -36,7 +36,8 @@ public interface BookMapper extends BaseMapper<Book> {
             "INNER JOIN author a ON b.author_id = a.author_id " +
             "LEFT JOIN recommendation r ON b.book_id = r.book_id AND r.is_deleted = false " +
             "WHERE b.is_deleted = false " +
-            "GROUP BY b.book_id, a.chinese_name " +
+            "GROUP BY b.book_id, b.chinese_name, b.cover_url, b.overview, a.chinese_name " +
+            "HAVING COUNT(r.record_id) >= 3 " +
             "ORDER BY recommendation_count DESC")
     List<ClassicBookVO> getClassicBooks();
 }
