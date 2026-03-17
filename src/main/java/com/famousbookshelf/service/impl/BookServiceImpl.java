@@ -3,6 +3,7 @@ package com.famousbookshelf.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.famousbookshelf.dto.BookSearchResultVO;
+import com.famousbookshelf.dto.ClassicBookVO;
 import com.famousbookshelf.entity.Author;
 import com.famousbookshelf.entity.Book;
 import com.famousbookshelf.entity.Celebrity;
@@ -157,5 +158,10 @@ public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements Bo
             com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.famousbookshelf.dto.AdminBookVO> page,
             String keyword) {
         return baseMapper.searchAdminPage(page, keyword);
+    }
+
+    @Override
+    public List<ClassicBookVO> getClassicBooks() {
+        return baseMapper.getClassicBooks();
     }
 }

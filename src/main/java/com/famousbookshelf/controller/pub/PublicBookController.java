@@ -3,6 +3,7 @@ package com.famousbookshelf.controller.pub;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.famousbookshelf.common.Result;
 import com.famousbookshelf.dto.BookDetailVO;
+import com.famousbookshelf.dto.ClassicBookVO;
 import com.famousbookshelf.dto.RecommendationVO;
 import com.famousbookshelf.entity.Author;
 import com.famousbookshelf.entity.Book;
@@ -128,5 +129,13 @@ public class PublicBookController {
 
 
         return Result.success(voList);
+    }
+
+    /**
+     * 获取长青经典专区图书列表
+     */
+    @GetMapping("/classics")
+    public Result<List<ClassicBookVO>> getClassicBooks() {
+        return Result.success(bookService.getClassicBooks());
     }
 }

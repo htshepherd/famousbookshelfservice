@@ -1,6 +1,5 @@
 package com.famousbookshelf.controller.admin;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.famousbookshelf.common.Result;
 import com.famousbookshelf.entity.Book;

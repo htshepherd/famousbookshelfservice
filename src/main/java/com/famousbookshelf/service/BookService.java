@@ -2,6 +2,7 @@ package com.famousbookshelf.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.famousbookshelf.dto.BookSearchResultVO;
+import com.famousbookshelf.dto.ClassicBookVO;
 import com.famousbookshelf.entity.Book;
 
 import java.util.List;
@@ -42,4 +43,9 @@ public interface BookService extends IService<Book> {
     com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.famousbookshelf.dto.AdminBookVO> searchAdminPage(
             com.baomidou.mybatisplus.extension.plugins.pagination.Page<com.famousbookshelf.dto.AdminBookVO> page,
             String keyword);
+
+    /**
+     * 获取长青经典图书列表（按推荐次数排序）
+     */
+    List<ClassicBookVO> getClassicBooks();
 }

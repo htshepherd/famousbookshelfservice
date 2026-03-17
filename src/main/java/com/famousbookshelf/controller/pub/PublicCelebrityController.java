@@ -83,4 +83,14 @@ public class PublicCelebrityController {
 
         return Result.success(voList);
     }
+
+    /**
+     * 获取全部名人列表 (按 ID 顺序排序)
+     */
+    @GetMapping("/all")
+    public Result<List<Celebrity>> getAllCelebrities() {
+        return Result.success(celebrityService.list(
+                new LambdaQueryWrapper<Celebrity>()
+                        .orderByAsc(Celebrity::getCelebrityId)));
+    }
 }
